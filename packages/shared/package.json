@@ -4,14 +4,23 @@
   "private": true,
   "main": "./index.ts",
   "types": "./index.ts",
+  "type": "module",
+  "resolve": {
+    "extensions": [
+      ".ts",
+      ".tsx",
+      ".js",
+      ".json"
+    ]
+  },
   "scripts": {
     "build": "tsc",
     "lint": "eslint .",
-    "type-check": "tsc --noEmit",
+    "type-check": "../../node_modules/.bin/tsc --noEmit",
     "clean": "rm -rf dist"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "eslint": "^9"
+    "eslint": "^9",
+    "typescript": "^5"
   }
 }

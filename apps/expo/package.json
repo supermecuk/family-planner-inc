@@ -1,0 +1,13 @@
+{
+  "name": "expo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'Expo app not yet configured'",
+    "build": "echo 'Expo app not yet configured'",
+    "lint": "echo 'Expo app not yet configured'",
+    "type-check": "echo 'Expo app not yet configured'",
+    "clean": "echo 'Expo app not yet configured'"
+  }
+}
