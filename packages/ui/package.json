@@ -19,6 +19,12 @@
     "type-check": "../../node_modules/.bin/tsc --noEmit",
     "clean": "rm -rf dist"
   },
+  "dependencies": {
+    "@tamagui/button": "^1.132.23",
+    "@tamagui/core": "^1.132.23",
+    "@tamagui/form": "^1.132.23",
+    "@tamagui/input": "^1.132.23"
+  },
   "devDependencies": {
     "@types/react": "^19",
     "@types/react-dom": "^19",
