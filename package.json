@@ -31,7 +31,11 @@
     "lint:ws": "pnpm dlx sherif@latest",
     "postinstall": "pnpm lint:ws",
     "typecheck": "turbo run type-check",
-    "ui-add": "turbo run ui-add"
+    "ui-add": "turbo run ui-add",
+    "deploy": "turbo run deploy",
+    "deploy:web": "turbo run deploy:web --filter=web",
+    "deploy:expo": "turbo run deploy:expo --filter=expo",
+    "deploy:all": "turbo run deploy --filter=\"./apps/**\""
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
