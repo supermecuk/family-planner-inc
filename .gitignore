@@ -2,6 +2,10 @@
 node_modules/
 .pnp
 .pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
 
 # Production builds
 .next/
@@ -41,6 +45,7 @@ jspm_packages/
 
 # TypeScript cache
 *.tsbuildinfo
+.tscache/
 
 # Optional npm cache directory
 .npm
@@ -72,6 +77,8 @@ jspm_packages/
 
 # Next.js build output
 .next
+.next/*
+!.next/cache
 
 # Nuxt.js build / generate output
 .nuxt
@@ -79,7 +86,8 @@ dist
 
 # Gatsby files
 .cache/
-public
+# Note: public folder is not ignored for Gatsby, only for this specific case
+# public
 
 # Storybook build outputs
 .out
@@ -89,12 +97,15 @@ storybook-static
 # Temporary folders
 tmp/
 temp/
+_tmp_*
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
@@ -109,12 +120,15 @@ Thumbs.db
 .Spotlight-V100
 .Trashes
 ehthumbs.db
+*.db
 
 # Turborepo
+.turbo/
 .turbo
 
 # Vercel
 .vercel
+.vercel.json
 
 # Firebase
 .firebase/
@@ -122,8 +136,26 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 
+# Expo
+.expo/
+dist/
+web-build/
+
+# React Native
+*.hprof
+
 # Local development
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Monorepo specific
+apps/*/dist/
+packages/*/dist/
+apps/*/.next/
+packages/*/.next/
+apps/*/build/
+packages/*/build/
+apps/*/.turbo/
+packages/*/.turbo/
