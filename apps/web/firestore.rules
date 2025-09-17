@@ -1,0 +1,103 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection - stores user information and family membership
+    match /users/{userId} {
+      // Users can read their own data
+      allow read: if request.auth != null && request.auth.uid == resource.data.uid;
+      
+      // Users can create their own document (for new sign-ins)
+      allow create: if request.auth != null 
+        && request.auth.uid == request.resource.data.uid
+        && request.resource.data.keys().hasAll(['uid', 'email', 'createdAt', 'lastSignIn'])
+        && request.resource.data.uid == request.auth.uid;
+      
+      // Users can update their own data (for profile updates and lastSignIn)
+      allow update: if request.auth != null 
+        && request.auth.uid == resource.data.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'photoURL', 'lastSignIn', 'familyId', 'role', 'subscriptionType', 'joinedAt']);
+      
+      // Users can create their own membership (via invite acceptance)
+      allow create: if request.auth != null 
+        && request.auth.uid == request.resource.data.uid
+        && request.resource.data.keys().hasAll(['uid', 'familyId', 'role', 'subscriptionType', 'joinedAt'])
+        && request.resource.data.role in ['owner', 'editor', 'approver', 'viewer']
+        && request.resource.data.subscriptionType in ['base', 'premium'];
+    }
+    // Invites collection - stores family invitations
+    match /invites/{inviteId} {
+      // Allow authenticated users to read invites for checking invitations
+      allow read: if request.auth != null;
+      
+      // Allow authenticated users to create invites (simplified rules)
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasAll(['familyId', 'role', 'status', 'code', 'expiresAt', 'createdAt', 'createdBy'])
+        && request.resource.data.role in ['viewer', 'editor', 'approver']
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdBy == request.auth.uid;
+      
+      // Only family owners and editors can update invites (for revoking)
+      allow update: if request.auth != null
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.familyId == resource.data.familyId
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['owner', 'editor']
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['accepted', 'expired'];
+    }
+    
+    // Families collection - stores family information
+    match /families/{familyId} {
+      // Family members can read family data
+      allow read: if request.auth != null
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.familyId == familyId;
+      
+      // Allow any authenticated user to create families (for initial family creation)
+      allow create: if request.auth != null
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.familyName is string
+        && request.resource.data.familyName != ""
+        && request.resource.data.isActive == true;
+      
+      // Only family owners can update family data
+      allow update: if request.auth != null
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.familyId == familyId
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'owner';
+    }
+    
+    // Tasks collection - existing task management rules
+    match /tasks/{taskId} {
+      // Authenticated users can read tasks
+      allow read: if request.auth != null;
+      
+      // Family members with appropriate roles can create tasks
+      allow create: if request.auth != null
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['owner', 'editor'];
+      
+      // Family members can update tasks based on their role
+      allow update: if request.auth != null
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && (
+          // Anyone can update status to 'completed'
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']) 
+           && request.resource.data.status == 'completed')
+          ||
+          // Editors and owners can update any field
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['owner', 'editor']
+          ||
+          // Approvers can approve tasks
+          (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['owner', 'approver']
+           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'approverId'])
+           && request.resource.data.status == 'approved')
+        );
+      
+      // Only editors and owners can delete tasks
+      allow delete: if request.auth != null
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['owner', 'editor'];
+    }
+  }
+}
