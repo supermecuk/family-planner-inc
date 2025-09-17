@@ -18,6 +18,18 @@
     },
     "clean": {
       "cache": false
+    },
+    "deploy": {
+      "dependsOn": ["build", "lint", "type-check"],
+      "cache": false
+    },
+    "deploy:web": {
+      "dependsOn": ["build", "lint", "type-check"],
+      "cache": false
+    },
+    "deploy:expo": {
+      "dependsOn": ["build", "lint", "type-check"],
+      "cache": false
     }
   }
 }
