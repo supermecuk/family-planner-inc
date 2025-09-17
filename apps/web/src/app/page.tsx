@@ -6,7 +6,6 @@ import { YStack, XStack } from "@tamagui/stacks";
 import { Button } from "@repo/ui";
 import { Users, Calendar, ArrowRight } from "lucide-react";
 import { getCurrentUser, signInWithGoogle } from "@/lib/auth";
-import { getUserFamilyMembership } from "@/lib/inviteService";
 
 export default function Home() {
   const [user, setUser] = useState<any>(null);
