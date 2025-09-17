@@ -1,0 +1,7 @@
+{
+\t"typescript.tsdk": "node_modules/typescript/lib",
+\t"eslint.nodePath": "node_modules",
+\t"eslint.workingDirectories": [
+\t\t{"mode": "auto"}
+\t]
+}
